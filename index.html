@@ -89,7 +89,7 @@
             margin-bottom: 5px;
         }
 
-        /* Container do Sub-menu 4P (Cria uma identidade visual de subopção) */
+        /* Container do Sub-menu 4P */
         .sub-accordion-content {
             display: none;
             margin-bottom: 12px;
@@ -107,9 +107,8 @@
             align-items: center;
         }
 
-        /* Botões internos de submodo (Menores e simétricos) */
         .sub-accordion-content button {
-            width: 85%; /* Menores que os botões padrão da tela */
+            width: 85%;
             padding: 10px 12px;
             font-size: 0.9rem;
             border-color: #444;
@@ -367,7 +366,6 @@
             <button onclick="selectPlayers(2)">2 Jogadores</button>
             <button onclick="selectPlayers(3)">3 Jogadores</button>
             
-            <!-- Botão Sanfona de 4 Jogadores -->
             <button id="btn-4p-accordion" onclick="toggle4PMenu()">4 Jogadores</button>
             <div id="content-4p-menu" class="sub-accordion-content">
                 <button onclick="select4PMode('todos')">Todos contra todos</button>
@@ -458,32 +456,31 @@
 </div>
 
 <script>
+    // MAPAS COM NUMERAÇÃO ORIGINAL + CAIXA DE ORIGEM ENTRE PARÊNTESES
     const boxesData = {
-        "Battle of Legends Vol. 1": { maps: [{ name: "Marmoreal (4P)", maxPlayers: 4 }, { name: "Sarpedon (2P)", maxPlayers: 2 }] },
-        "Battle of Legends Vol. 2": { maps: [{ name: "Jardins Suspensos (4P)", maxPlayers: 4 }] },
-        "Battle of Legends Vol. 3": { maps: [{ name: "Triângulo das Bermudas (4P)", maxPlayers: 4 }, { name: "Submundo (4P)", maxPlayers: 4 }] },
-        "Becos & Brumas (Cobble & Fog)": { maps: [{ name: "Soho (4P)", maxPlayers: 4 }, { name: "Mansão Baskerville (4P)", maxPlayers: 4 }] },
-        "Fundas e Flechas": { maps: [{ name: "Star City (2P)", maxPlayers: 2 }] },
-        "Buffy the Vampire Slayer": { maps: [{ name: "Sunnydale High (4P)", maxPlayers: 4 }, { name: "The Bronze (4P)", maxPlayers: 4 }] },
-        "Robin Hood vs Pé Grande": { maps: [{ name: "Floresta de Sherwood (4P)", maxPlayers: 4 }, { name: "Yukon (2P)", maxPlayers: 2 }] },
-        "Chapeuzinho Vermelho vs Beowulf": { maps: [{ name: "Heorot (2P)", maxPlayers: 2 }] },
-        "A Origem do Sol (Sun's Origin)": { maps: [{ name: "Castelo Azuchi (2P)", maxPlayers: 2 }] },
-        "Houdini vs Gênio": { maps: [{ name: "Túmulo de Salomão / Dirigível (2P)", maxPlayers: 2 }] },
-        "Jurassic Park: InGen vs Raptors": { maps: [{ name: "Selva da Ilha Nublar (2P)", maxPlayers: 2 }] },
-        "Jurassic Park: Sattler vs T-Rex": { maps: [{ name: "Cercado do T-Rex / Heliponto (2P)", maxPlayers: 2 }] },
-        "Marvel: Hell's Kitchen": { maps: [{ name: "Hell's Kitchen (3P)", maxPlayers: 3 }] },
-        "Marvel: Redemption Row": { maps: [{ name: "A Balsa (3P)", maxPlayers: 3 }] },
-        "Marvel: For King & Country": { maps: [{ name: "Helicarrier (4P)", maxPlayers: 4 }] },
-        "Marvel: Brains and Brawn": { maps: [{ name: "Sanctum Sanctorum (4P)", maxPlayers: 4 }] },
-        "Marvel: Teen Spirit": { maps: [{ name: "Píer da Marinha (2P)", maxPlayers: 2 }] },
-        "The Witcher: Aço e Prata": { maps: [{ name: "Kaer Morhen (4P)", maxPlayers: 4 }, { name: "Novigrad (4P)", maxPlayers: 4 }] },
-        "The Witcher: A Queda dos Reinos": { maps: [{ name: "Oxenfurt (4P)", maxPlayers: 4 }, { name: "Pântano do Corvo (4P)", maxPlayers: 4 }] },
-        "Muhammad Ali vs Bruce Lee": { maps: [{ name: "Arena de Boxe (2P)", maxPlayers: 2 }] },
-        "Aventuras: Contos Fantásticos": { maps: [{ name: "Point Pleasant (4P)", maxPlayers: 4 }, { name: "McMinnville (4P)", maxPlayers: 4 }] },
-        "Aventuras: TMNT (Tartarugas Ninja)": { maps: [{ name: "Esgotos de NY (4P)", maxPlayers: 4 }, { name: "Telhados de NY (4P)", maxPlayers: 4 }] },
-        "TMNT: Destruidor vs Krang": { maps: [{ name: "Tecnodrómo (2P)", maxPlayers: 2 }] },
-        "Lutador Solo: Bruce Lee": { maps: [] }, 
-        "Lutador Solo: Deadpool": { maps: [] }
+        "Battle of Legends Vol. 1": { maps: [{ name: "01 - Marmoreal (4P) (Vol. 1)", maxPlayers: 4 }, { name: "02 - Sarpedon (2P) (Vol. 1)", maxPlayers: 2 }] },
+        "Battle of Legends Vol. 2": { maps: [{ name: "05 - Jardins Suspensos (4P) (Vol. 2)", maxPlayers: 4 }] },
+        "Battle of Legends Vol. 3": { maps: [{ name: "13 - Triângulo das Bermudas (4P) (Vol. 3)", maxPlayers: 4 }, { name: "14 - Submundo (4P) (Vol. 3)", maxPlayers: 4 }] },
+        "Becos & Brumas (Cobble & Fog)": { maps: [{ name: "03 - Soho (4P) (Becos & Brumas)", maxPlayers: 4 }, { name: "04 - Mansão Baskerville (4P) (Becos & Brumas)", maxPlayers: 4 }] },
+        "Fundas e Flechas": { maps: [{ name: "23 - Star City (2P) (Fundas e Flechas)", maxPlayers: 2 }] },
+        "Buffy the Vampire Slayer": { maps: [{ name: "08 - Sunnydale High (4P) (Buffy)", maxPlayers: 4 }, { name: "09 - The Bronze (4P) (Buffy)", maxPlayers: 4 }] },
+        "Robin Hood vs Pé Grande": { maps: [{ name: "06 - Floresta de Sherwood (4P) (Robin vs Pé Grande)", maxPlayers: 4 }, { name: "07 - Yukon (2P) (Robin vs Pé Grande)", maxPlayers: 2 }] },
+        "Chapeuzinho Vermelho vs Beowulf": { maps: [{ name: "10 - Heorot (2P) (Chapeuzinho vs Beowulf)", maxPlayers: 2 }] },
+        "A Origem do Sol (Sun's Origin)": { maps: [{ name: "22 - Castelo Azuchi (2P) (Origem do Sol)", maxPlayers: 2 }] },
+        "Houdini vs Gênio": { maps: [{ name: "18 - Túmulo de Salomão / Dirigível (2P) (Houdini vs Gênio)", maxPlayers: 2 }] },
+        "Jurassic Park: InGen vs Raptors": { maps: [{ name: "11 - Selva da Ilha Nublar (2P) (JP: InGen vs Raptors)", maxPlayers: 2 }] },
+        "Jurassic Park: Sattler vs T-Rex": { maps: [{ name: "12 - Cercado do T-Rex / Heliponto (2P) (JP: Sattler vs T-Rex)", maxPlayers: 2 }] },
+        "Marvel: Hell's Kitchen": { maps: [{ name: "16 - Hell's Kitchen (3P) (Marvel: Hell's Kitchen)", maxPlayers: 3 }] },
+        "Marvel: Redemption Row": { maps: [{ name: "15 - A Balsa (3P) (Marvel: Redemption Row)", maxPlayers: 3 }] },
+        "Marvel: For King & Country": { maps: [{ name: "17 - Helicarrier (4P) (Marvel: For King & Country)", maxPlayers: 4 }] },
+        "Marvel: Brains and Brawn": { maps: [{ name: "20 - Sanctum Sanctorum (4P) (Marvel: Brains & Brawn)", maxPlayers: 4 }] },
+        "Marvel: Teen Spirit": { maps: [{ name: "19 - Píer da Marinha (2P) (Marvel: Teen Spirit)", maxPlayers: 2 }] },
+        "The Witcher: Aço e Prata": { maps: [{ name: "24 - Kaer Morhen (4P) (Witcher: Aço e Prata)", maxPlayers: 4 }, { name: "25 - Novigrad (4P) (Witcher: Aço e Prata)", maxPlayers: 4 }] },
+        "The Witcher: A Queda dos Reinos": { maps: [{ name: "26 - Oxenfurt (4P) (Witcher: Queda dos Reinos)", maxPlayers: 4 }, { name: "27 - Pântano do Corvo (4P) (Witcher: Queda dos Reinos)", maxPlayers: 4 }] },
+        "Muhammad Ali vs Bruce Lee": { maps: [{ name: "21 - Arena de Boxe (2P) (Ali vs Bruce Lee)", maxPlayers: 2 }] },
+        "Aventuras: Contos Fantásticos": { maps: [{ name: "28 - Point Pleasant (4P) (Aventuras: Contos Fantásticos)", maxPlayers: 4 }, { name: "29 - McMinnville (4P) (Aventuras: Contos Fantásticos)", maxPlayers: 4 }] },
+        "Aventuras: TMNT (Tartarugas Ninja)": { maps: [{ name: "30 - Esgotos de NY (4P) (Aventuras: TMNT)", maxPlayers: 4 }, { name: "31 - Telhados de NY (4P) (Aventuras: TMNT)", maxPlayers: 4 }] },
+        "TMNT: Destruidor vs Krang": { maps: [{ name: "32 - Tecnodrómo (2P) (TMNT: Destruidor vs Krang)", maxPlayers: 2 }] }
     };
 
     const allCharacters = [
@@ -581,7 +578,6 @@
         document.getElementById(screenId).classList.add('active');
     }
 
-    // AÇÃO VISUAL: ABRE OU RECOLHE O SUBMENU DE 4 JOGADORES NA HOME
     function toggle4PMenu() {
         let btn = document.getElementById('btn-4p-accordion');
         let content = document.getElementById('content-4p-menu');
@@ -595,7 +591,6 @@
         }
     }
 
-    // FECHA O MENU DE 4 JOGADORES FORÇADAMENTE AO AVANÇAR OU RETORNAR
     function collapse4PMenu() {
         document.getElementById('content-4p-menu').classList.remove('active');
         document.getElementById('btn-4p-accordion').classList.remove('active');
@@ -603,13 +598,14 @@
 
     function selectPlayers(num) {
         totalPlayers = num;
-        collapse4PMenu(); // Reseta se trocar para 2P ou 3P
+        collapse4PMenu(); 
         if (num !== 4) {
             document.getElementById('mode-title').innerText = `${num} Jogadores`;
             goToScreen('screen-modes');
         }
     }
 
+    // Configuração de Submodo
     function select4PMode(mode) {
         totalPlayers = 4;
         matchSubMode = mode;
@@ -617,7 +613,6 @@
         goToScreen('screen-modes');
     }
 
-    // RETORNA AO MENU E ASSEGURA QUE A SANFONA VOLTE RECOLHIDA
     function goBackToMainMenu() {
         collapse4PMenu();
         goToScreen('screen-players');
@@ -708,6 +703,7 @@
         }
     }
 
+    // SANFONA DA COLEÇÃO
     function toggleCollectionAccordion(index) {
         let btn = document.getElementById(`btn-col-${index}`);
         let content = document.getElementById(`content-col-${index}`);
@@ -1017,6 +1013,7 @@
         saveMatchToHistory(winnerName);
     }
 
+    // HISTÓRICO
     function declareTeamWinner(teamLetter, winningPlayers) {
         clearInterval(timerInterval);
         Object.keys(currentMatchHeroes).forEach(pNum => {
