@@ -456,7 +456,6 @@
 </div>
 
 <script>
-    // MAPAS COM NUMERAÇÃO ORIGINAL + CAIXA DE ORIGEM ENTRE PARÊNTESES
     const boxesData = {
         "Battle of Legends Vol. 1": { maps: [{ name: "01 - Marmoreal (4P) (Vol. 1)", maxPlayers: 4 }, { name: "02 - Sarpedon (2P) (Vol. 1)", maxPlayers: 2 }] },
         "Battle of Legends Vol. 2": { maps: [{ name: "05 - Jardins Suspensos (4P) (Vol. 2)", maxPlayers: 4 }] },
@@ -605,7 +604,6 @@
         }
     }
 
-    // Configuração de Submodo
     function select4PMode(mode) {
         totalPlayers = 4;
         matchSubMode = mode;
@@ -703,7 +701,6 @@
         }
     }
 
-    // SANFONA DA COLEÇÃO
     function toggleCollectionAccordion(index) {
         let btn = document.getElementById(`btn-col-${index}`);
         let content = document.getElementById(`content-col-${index}`);
@@ -948,7 +945,7 @@
                 let pNum = card.getAttribute('data-player');
                 let sel = card.querySelector('.ban-item.selected');
                 if (sel) {
-                    currentMatchHeroes[pNum] = sel.getAttribute('data-name');
+                    currentMatchHeroes[pNum] = sel.getAttribute('name');
                     totalSelected++;
                 }
             });
@@ -980,12 +977,14 @@
         } else {
             Object.keys(currentMatchHeroes).forEach(pNum => {
                 let hName = currentMatchHeroes[pNum];
-                contendersHtml += `
-                    <div class="match-card">
-                        <strong>[J${pNum}] ${hName}</strong>
-                        <button class="btn-win" onclick="declareSingleWinner('${hName}')">Vitória</button>
-                    </div>
-                `;
+                if (typeof hName === "string") {
+                    contendersHtml += `
+                        <div class="match-card">
+                            <strong>[J${pNum}] ${hName}</strong>
+                            <button class="btn-win" onclick="declareSingleWinner('${hName}')">Vitória</button>
+                        </div>
+                    `;
+                }
             });
         }
         
@@ -1007,19 +1006,22 @@
     function declareSingleWinner(winnerName) {
         clearInterval(timerInterval);
         Object.values(currentMatchHeroes).forEach(hero => {
-            statsData[hero].matches += 1;
-            if (hero === winnerName) statsData[hero].wins += 1;
+            if (typeof hero === "string") {
+                statsData[hero].matches += 1;
+                if (hero === winnerName) statsData[hero].wins += 1;
+            }
         });
         saveMatchToHistory(winnerName);
     }
 
-    // HISTÓRICO
     function declareTeamWinner(teamLetter, winningPlayers) {
         clearInterval(timerInterval);
         Object.keys(currentMatchHeroes).forEach(pNum => {
             let hero = currentMatchHeroes[pNum];
-            statsData[hero].matches += 1;
-            if (winningPlayers.includes(parseInt(pNum))) statsData[hero].wins += 1;
+            if (typeof hero === "string") {
+                statsData[hero].matches += 1;
+                if (winningPlayers.includes(parseInt(pNum))) statsData[hero].wins += 1;
+            }
         });
         saveMatchToHistory(`Dupla ${teamLetter} (${currentMatchHeroes[winningPlayers[0]]} & ${currentMatchHeroes[winningPlayers[1]]})`);
     }
