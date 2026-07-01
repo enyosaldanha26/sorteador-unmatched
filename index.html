@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador Unmatched Mundial Pro</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #1a1a1e;
+            --primary: #dfa012;
+            --text: #e1e1e6;
+            --text-secondary: #a8a8b3;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --purple: #6a1b9a;
+            --blue: #2b6cb0;
+            --red-team: #c53030;
+            --warning: #f59e0b;
+        }
+
+        /* RESET GLOBAL */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--text);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        /* Sanfona Base */
+        .accordion-btn {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            border: 1px solid #29292e;
+            color: var(--text);
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            background: #202024;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .accordion-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .accordion-btn.active {
+            border-color: #444;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 5px;
+        }
+
+        /* Container do Sub-menu 4P (Cria uma identidade visual de subopção) */
+        .sub-accordion-content {
+            display: none;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid #202024;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .sub-accordion-content.active {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Botões internos de submodo (Menores e simétricos) */
+        .sub-accordion-content button {
+            width: 85%; /* Menores que os botões padrão da tela */
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            border-color: #444;
+            color: var(--text-secondary);
+            background: #18181c;
+        }
+
+        .sub-accordion-content button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(223, 160, 18, 0.02);
+        }
+
+        .box-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .quick-toggle-btn {
+            font-size: 1.2rem;
+            padding: 2px 4px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            user-select: none;
+        }
+
+        .quick-toggle-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .accordion-content {
+            display: none;
+            animation: fadeIn 0.2s ease;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        .screen {
+            display: none;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            animation: fadeIn 0.3s ease;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button {
+            background-color: transparent;
+            color: var(--text);
+            border: 2px solid var(--text-secondary);
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            width: 100%;
+        }
+
+        button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(223, 160, 18, 0.05);
+        }
+
+        .btn-config { border-color: var(--primary); color: var(--primary); margin-top: 5px; }
+        .btn-stats { border-color: #38b2ac; color: #38b2ac; }
+        .btn-start { border-color: var(--success); color: var(--success); margin-top: 15px; }
+
+        .btn-back {
+            margin-top: 20px;
+            border-color: #444;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 10px 15px;
+            background: transparent;
+        }
+
+        .collection-shortcut-group { display: flex; gap: 8px; margin-bottom: 12px; }
+        .btn-shortcut { padding: 8px 10px; font-size: 0.8rem; border-color: #444; color: var(--text-secondary); }
+
+        .scroll-container {
+            text-align: left;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 3px;
+            width: 100%;
+        }
+
+        .box-container {
+            background: #18181c;
+            border: 1px solid #29292e;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            padding: 2px;
+            width: 100%;
+        }
+
+        .hero-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #202024;
+            margin: 4px;
+            border-radius: 6px;
+            border: 1px solid #29292e;
+        }
+
+        .hero-row span {
+            font-size: 0.88rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+
+        .hero-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--warning);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .stats-item, .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #202024;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #29292e;
+        }
+
+        .history-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .results-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+        .player-card {
+            background: #202024;
+            border-radius: 10px;
+            padding: 12px;
+            border-left: 5px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+        }
+        .player-card.team-a { border-left-color: var(--blue); }
+        .player-card.team-b { border-left-color: var(--red-team); }
+        .player-card.ban-mode { flex-direction: column; align-items: flex-start; }
+
+        .team-tag {
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            text-transform: uppercase;
+        }
+        .tag-a { background: rgba(43, 108, 176, 0.2); color: #63b3ed; border: 1px solid #2b6cb0; }
+        .tag-b { background: rgba(197, 48, 48, 0.2); color: #fc8181; border: 1px solid #c53030; }
+
+        .hero-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2b2b32, #121214);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
+        .team-a .hero-badge { border-color: #2b6cb0; color: #63b3ed; }
+        .team-b .hero-badge { border-color: #c53030; color: #fc8181; }
+
+        .hero-info { flex: 1; min-width: 0; }
+        .hero-name { font-size: 1.1rem; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hero-set { font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .options-container { display: flex; gap: 8px; width: 100%; justify-content: space-between; margin-top: 10px; }
+
+        .ban-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #29292e;
+            padding: 8px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #444;
+            flex: 1;
+            min-width: 0;
+            transition: all 0.2s ease;
+        }
+
+        .ban-item .hero-badge { width: 40px; height: 40px; font-size: 0.9rem; margin-bottom: 4px; border-color: var(--text-secondary); color: var(--text-secondary); }
+        .ban-item span { font-size: 0.65rem; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+        .ban-item.banned { border-color: var(--danger); background: rgba(229, 62, 62, 0.1); opacity: 0.5; }
+        .ban-item.banned .hero-badge { border-color: var(--danger); color: var(--danger); text-decoration: line-through; }
+        .ban-item.selected { border-color: var(--success); background: rgba(56, 161, 105, 0.15); }
+        .ban-item.selected .hero-badge { border-color: var(--success); color: var(--success); }
+
+        .map-box { background: #29292e; padding: 12px; border-radius: 8px; margin-top: 20px; font-weight: bold; color: var(--primary); border: 1px dashed var(--primary); font-size: 1rem; }
+
+        .arena-team-box { background: rgba(0,0,0,0.15); border-radius: 8px; padding: 10px; margin-bottom: 12px; border: 1px solid #29292e; }
+        .arena-team-box.box-a { border-top: 3px solid var(--blue); }
+        .arena-team-box.box-b { border-top: 3px solid var(--red-team); }
+        .team-title { font-size: 0.85rem; font-weight: bold; text-align: left; margin-bottom: 6px; }
+
+        .match-card { background: #202024; padding: 10px 12px; border-radius: 6px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 0.9rem; }
+        .btn-win { border-color: var(--success); color: var(--success); padding: 4px 10px; font-size: 0.8rem; width: auto; }
+        .timer-box { font-size: 1.8rem; font-weight: bold; color: #38b2ac; margin: 15px 0; letter-spacing: 1px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sorteador Unmatched</h1>
+
+    <!-- TELA 1 -->
+    <div id="screen-players" class="screen active">
+        <h2>Quantidade de jogadores:</h2>
+        <div class="btn-group">
+            <button onclick="selectPlayers(2)">2 Jogadores</button>
+            <button onclick="selectPlayers(3)">3 Jogadores</button>
+            
+            <!-- Botão Sanfona de 4 Jogadores -->
+            <button id="btn-4p-accordion" onclick="toggle4PMenu()">4 Jogadores</button>
+            <div id="content-4p-menu" class="sub-accordion-content">
+                <button onclick="select4PMode('todos')">Todos contra todos</button>
+                <button onclick="select4PMode('dupla')">Dupla</button>
+            </div>
+
+            <button class="btn-stats" onclick="openDashboardScreen()">📊 Estatísticas & Histórico</button>
+            <button class="btn-config" onclick="openCollection()">⚙️ Gerenciar Coleção</button>
+        </div>
+    </div>
+
+    <!-- TELA GERENCIAR COLEÇÃO -->
+    <div id="screen-collection" class="screen">
+        <h2>Minha Coleção</h2>
+        <div class="collection-shortcut-group">
+            <button class="btn-shortcut" onclick="setMassCollection(true)">Marcar Todas</button>
+            <button class="btn-shortcut" onclick="setMassCollection(false)">Desmarcar Todas</button>
+        </div>
+        <div id="collection-list-container" class="scroll-container"></div>
+        <button onclick="saveCollection()" style="border-color: var(--success); color: var(--success); margin-top: 15px;">Salvar Coleção</button>
+    </div>
+
+    <!-- TELA PAINEL -->
+    <div id="screen-dashboard" class="screen">
+        <h2>Painel da Mesa</h2>
+        
+        <button class="accordion-btn" id="btn-acc-winrate" onclick="toggleAccordion('winrate')">
+            <span>Winrate (Taxa de Vitória)</span>
+            <span>▼</span>
+        </button>
+        <div id="content-acc-winrate" class="accordion-content">
+            <div id="stats-list-container" class="scroll-container"></div>
+        </div>
+        
+        <button class="accordion-btn" id="btn-acc-history" onclick="toggleAccordion('history')">
+            <span>Histórico de Partidas</span>
+            <span>▼</span>
+        </button>
+        <div id="content-acc-history" class="accordion-content">
+            <div id="history-list-container" class="scroll-container"></div>
+        </div>
+
+        <button class="btn-shortcut" onclick="resetAllData()" style="border-color: var(--danger); color: var(--danger); margin-top: 15px; margin-bottom: 10px;">Limpar Tudo (Zerar App)</button>
+        <button onclick="goBackToMainMenu()">Voltar ao Menu</button>
+    </div>
+
+    <!-- TELA 2: Modos -->
+    <div id="screen-modes" class="screen">
+        <h2 id="mode-title"></h2>
+        <div class="btn-group">
+            <button onclick="startSimpleSort()">Sorteio Simples</button>
+            <button onclick="startBanSort()">Sorteio com Banimento</button>
+        </div>
+        <button class="btn-back" onclick="goBackToMainMenu()">Voltar</button>
+    </div>
+
+    <!-- TELA 3: Resultado Simples -->
+    <div id="screen-result-simple" class="screen">
+        <h2>Resultado do Sorteio</h2>
+        <div id="simple-results" class="results-grid"></div>
+        <div id="simple-map" class="map-box"></div>
+        <button class="btn-start" onclick="goToArena('simple')">⚔️ Iniciar Partida</button>
+        <button class="btn-back" onclick="goBackToModes()">Voltar</button>
+    </div>
+
+    <!-- TELA 4: Resultado Banimento -->
+    <div id="screen-result-ban" class="screen">
+        <h2>Fase de Escolha</h2>
+        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 12px;">
+            Marque 1 Banido e 1 Escolhido para cada jogador antes de iniciar!
+        </p>
+        <div id="ban-results" class="results-grid"></div>
+        <div id="ban-map" class="map-box"></div>
+        <button class="btn-start" onclick="goToArena('ban')">⚔️ Iniciar Partida</button>
+        <button class="btn-back" onclick="goBackToModes()">Voltar</button>
+    </div>
+
+    <!-- TELA 5 -->
+    <div id="screen-arena" class="screen">
+        <h2>Partida em Andamento</h2>
+        <div id="arena-map" style="font-size: 0.9rem; color: var(--primary); margin-bottom: 12px;"></div>
+        
+        <div class="timer-box" id="arena-timer">00:00</div>
+        
+        <h3>Declarar Campeão</h3>
+        <div id="arena-contenders"></div>
+    </div>
+</div>
+
+<script>
+    const boxesData = {
+        "Battle of Legends Vol. 1": { maps: [{ name: "Marmoreal (4P)", maxPlayers: 4 }, { name: "Sarpedon (2P)", maxPlayers: 2 }] },
+        "Battle of Legends Vol. 2": { maps: [{ name: "Jardins Suspensos (4P)", maxPlayers: 4 }] },
+        "Battle of Legends Vol. 3": { maps: [{ name: "Triângulo das Bermudas (4P)", maxPlayers: 4 }, { name: "Submundo (4P)", maxPlayers: 4 }] },
+        "Becos & Brumas (Cobble & Fog)": { maps: [{ name: "Soho (4P)", maxPlayers: 4 }, { name: "Mansão Baskerville (4P)", maxPlayers: 4 }] },
+        "Fundas e Flechas": { maps: [{ name: "Star City (2P)", maxPlayers: 2 }] },
+        "Buffy the Vampire Slayer": { maps: [{ name: "Sunnydale High (4P)", maxPlayers: 4 }, { name: "The Bronze (4P)", maxPlayers: 4 }] },
+        "Robin Hood vs Pé Grande": { maps: [{ name: "Floresta de Sherwood (4P)", maxPlayers: 4 }, { name: "Yukon (2P)", maxPlayers: 2 }] },
+        "Chapeuzinho Vermelho vs Beowulf": { maps: [{ name: "Heorot (2P)", maxPlayers: 2 }] },
+        "A Origem do Sol (Sun's Origin)": { maps: [{ name: "Castelo Azuchi (2P)", maxPlayers: 2 }] },
+        "Houdini vs Gênio": { maps: [{ name: "Túmulo de Salomão / Dirigível (2P)", maxPlayers: 2 }] },
+        "Jurassic Park: InGen vs Raptors": { maps: [{ name: "Selva da Ilha Nublar (2P)", maxPlayers: 2 }] },
+        "Jurassic Park: Sattler vs T-Rex": { maps: [{ name: "Cercado do T-Rex / Heliponto (2P)", maxPlayers: 2 }] },
+        "Marvel: Hell's Kitchen": { maps: [{ name: "Hell's Kitchen (3P)", maxPlayers: 3 }] },
+        "Marvel: Redemption Row": { maps: [{ name: "A Balsa (3P)", maxPlayers: 3 }] },
+        "Marvel: For King & Country": { maps: [{ name: "Helicarrier (4P)", maxPlayers: 4 }] },
+        "Marvel: Brains and Brawn": { maps: [{ name: "Sanctum Sanctorum (4P)", maxPlayers: 4 }] },
+        "Marvel: Teen Spirit": { maps: [{ name: "Píer da Marinha (2P)", maxPlayers: 2 }] },
+        "The Witcher: Aço e Prata": { maps: [{ name: "Kaer Morhen (4P)", maxPlayers: 4 }, { name: "Novigrad (4P)", maxPlayers: 4 }] },
+        "The Witcher: A Queda dos Reinos": { maps: [{ name: "Oxenfurt (4P)", maxPlayers: 4 }, { name: "Pântano do Corvo (4P)", maxPlayers: 4 }] },
+        "Muhammad Ali vs Bruce Lee": { maps: [{ name: "Arena de Boxe (2P)", maxPlayers: 2 }] },
+        "Aventuras: Contos Fantásticos": { maps: [{ name: "Point Pleasant (4P)", maxPlayers: 4 }, { name: "McMinnville (4P)", maxPlayers: 4 }] },
+        "Aventuras: TMNT (Tartarugas Ninja)": { maps: [{ name: "Esgotos de NY (4P)", maxPlayers: 4 }, { name: "Telhados de NY (4P)", maxPlayers: 4 }] },
+        "TMNT: Destruidor vs Krang": { maps: [{ name: "Tecnodrómo (2P)", maxPlayers: 2 }] },
+        "Lutador Solo: Bruce Lee": { maps: [] }, 
+        "Lutador Solo: Deadpool": { maps: [] }
+    };
+
+    const allCharacters = [
+        { name: "Alice", set: "Battle of Legends Vol. 1", initials: "AL" },
+        { name: "Rei Arthur", set: "Battle of Legends Vol. 1", initials: "RA" },
+        { name: "Medusa", set: "Battle of Legends Vol. 1", initials: "MD" },
+        { name: "Sinbad", set: "Battle of Legends Vol. 1", initials: "SB" },
+        { name: "Aquiles", set: "Battle of Legends Vol. 2", initials: "AQ" },
+        { name: "Bloody Mary", set: "Battle of Legends Vol. 2", initials: "BM" },
+        { name: "Sun Wukong (Rei Macaco)", set: "Battle of Legends Vol. 2", initials: "SW" },
+        { name: "Yennenga", set: "Battle of Legends Vol. 2", initials: "YN" },
+        { name: "Loki", set: "Battle of Legends Vol. 3", initials: "LK" },
+        { name: "Pandora", set: "Battle of Legends Vol. 3", initials: "PD" },
+        { name: "Chupacabra", set: "Battle of Legends Vol. 3", initials: "CC" },
+        { name: "Barba Negra", set: "Battle of Legends Vol. 3", initials: "BN" },
+        { name: "Sherlock Holmes", set: "Becos & Brumas (Cobble & Fog)", initials: "SH" },
+        { name: "Drácula (Becos)", set: "Becos & Brumas (Cobble & Fog)", initials: "DR" },
+        { name: "Homem Invisível", set: "Becos & Brumas (Cobble & Fog)", initials: "HI" },
+        { name: "Jekyll & Hyde", set: "Becos & Brumas (Cobble & Fog)", initials: "JH" },
+        { name: "Arqueiro Verde", set: "Fundas e Flechas", initials: "AV" },
+        { name: "Canário Negro", set: "Fundas e Flechas", initials: "CN" },
+        { name: "Buffy", set: "Buffy the Vampire Slayer", initials: "BF" },
+        { name: "Spike", set: "Buffy the Vampire Slayer", initials: "SP" },
+        { name: "Willow", set: "Buffy the Vampire Slayer", initials: "WL" },
+        { name: "Angel", set: "Buffy the Vampire Slayer", initials: "AG" },
+        { name: "Robin Hood", set: "Robin Hood vs Pé Grande", initials: "RH" },
+        { name: "Pé Grande (Bigfoot)", set: "Robin Hood vs Pé Grande", initials: "PG" },
+        { name: "Chapeuzinho Vermelho", set: "Chapeuzinho Vermelho vs Beowulf", initials: "CV" },
+        { name: "Beowulf", set: "Chapeuzinho Vermelho vs Beowulf", initials: "BW" },
+        { name: "Tomoe Gozen", set: "A Origem do Sol (Sun's Origin)", initials: "TG" },
+        { name: "Oda Nobunaga", set: "A Origem do Sol (Sun's Origin)", initials: "ON" },
+        { name: "Houdini", set: "Houdini vs Gênio", initials: "HD" },
+        { name: "O Gênio", set: "Houdini vs Gênio", initials: "GN" },
+        { name: "InGen (Robert Muldoon)", set: "Jurassic Park: InGen vs Raptors", initials: "IG" },
+        { name: "Raptors", set: "Jurassic Park: InGen vs Raptors", initials: "RP" },
+        { name: "Dra. Sattler", set: "Jurassic Park: Sattler vs T-Rex", initials: "ST" },
+        { name: "T-Rex", set: "Jurassic Park: Sattler vs T-Rex", initials: "TR" },
+        { name: "Demolidor (Daredevil)", set: "Marvel: Hell's Kitchen", initials: "DD" },
+        { name: "Elektra", set: "Marvel: Hell's Kitchen", initials: "EL" },
+        { name: "Mercenário (Bullseye)", set: "Marvel: Hell's Kitchen", initials: "MC" },
+        { name: "Luke Cage", set: "Marvel: Redemption Row", initials: "LC" },
+        { name: "Cavaleiro da Lua", set: "Marvel: Redemption Row", initials: "CL" },
+        { name: "Motoqueiro Fantasma", set: "Marvel: Redemption Row", initials: "MF" },
+        { name: "Viúva Negra", set: "Marvel: For King & Country", initials: "VN" },
+        { name: "Pantera Negra", set: "Marvel: For King & Country", initials: "PN" },
+        { name: "Soldado Invernal", set: "Marvel: For King & Country", initials: "SI" },
+        { name: "Homem-Aranha", set: "Marvel: Brains and Brawn", initials: "HA" },
+        { name: "Doutor Estranho", set: "Marvel: Brains and Brawn", initials: "DE" },
+        { name: "Mulher-Hulk", set: "Marvel: Brains and Brawn", initials: "MH" },
+        { name: "Ms. Marvel", set: "Marvel: Teen Spirit", initials: "MM" },
+        { name: "Garota Esquilo", set: "Marvel: Teen Spirit", initials: "GE" },
+        { name: "Manto & Adaga", set: "Marvel: Teen Spirit", initials: "MA" },
+        { name: "Geralt de Rívia", set: "The Witcher: Aço e Prata", initials: "GE" },
+        { name: "Ciri", set: "The Witcher: Aço e Prata", initials: "CR" },
+        { name: "Leshen", set: "The Witcher: Aço e Prata", initials: "LE" },
+        { name: "Yennefer & Triss", set: "The Witcher: Aço e Prata", initials: "YT" },
+        { name: "Jaskier", set: "The Witcher: A Queda dos Reinos", initials: "JS" },
+        { name: "Philippa", set: "The Witcher: A Queda dos Reinos", initials: "PL" },
+        { name: "Eredin (Caçada Selvagem)", set: "The Witcher: A Queda dos Reinos", initials: "ER" },
+        { name: "Ciri (Imperatriz)", set: "The Witcher: A Queda dos Reinos", initials: "CE" },
+        { name: "Muhammad Ali", set: "Muhammad Ali vs Bruce Lee", initials: "MA" },
+        { name: "Bruce Lee (Caixa Ali)", set: "Muhammad Ali vs Bruce Lee", initials: "BL" },
+        { name: "Bruce Lee", set: "Lutador Solo: Bruce Lee", initials: "BL" },
+        { name: "Deadpool", set: "Lutador Solo: Deadpool", initials: "DP" },
+        { name: "Nikola Tesla", set: "Aventuras: Contos Fantásticos", initials: "NT" },
+        { name: "Annie Jones", set: "Aventuras: Contos Fantásticos", initials: "AJ" },
+        { name: "Golden Bat", set: "Aventuras: Contos Fantásticos", initials: "GB" },
+        { name: "Dra. Jill Trent", set: "Aventuras: Contos Fantásticos", initials: "JT" },
+        { name: "Leonardo", set: "Aventuras: TMNT (Tartarugas Ninja)", initials: "LE" },
+        { name: "Raphael", set: "Aventuras: TMNT (Tartarugas Ninja)", initials: "RP" },
+        { name: "Donatello", set: "Aventuras: TMNT (Tartarugas Ninja)", initials: "DN" },
+        { name: "Michelangelo", set: "Aventuras: TMNT (Tartarugas Ninja)", initials: "MA" },
+        { name: "Destruidor (Shredder)", set: "TMNT: Destruidor vs Krang", initials: "DT" },
+        { name: "Krang", set: "TMNT: Destruidor vs Krang", initials: "KR" }
+    ];
+
+    let heroesStatus = JSON.parse(localStorage.getItem('unmatched_heroes_status')) || {};
+    let statsData = JSON.parse(localStorage.getItem('unmatched_stats')) || {};
+    let matchHistory = JSON.parse(localStorage.getItem('unmatched_history')) || [];
+
+    allCharacters.forEach(c => {
+        if (heroesStatus[c.name] === undefined) heroesStatus[c.name] = true;
+        if (!statsData[c.name]) statsData[c.name] = { matches: 0, wins: 0 };
+    });
+
+    let totalPlayers = 2;
+    let matchSubMode = "todos"; 
+    let currentMatchHeroes = {}; 
+    let currentMap = "";
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    function goToScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    // AÇÃO VISUAL: ABRE OU RECOLHE O SUBMENU DE 4 JOGADORES NA HOME
+    function toggle4PMenu() {
+        let btn = document.getElementById('btn-4p-accordion');
+        let content = document.getElementById('content-4p-menu');
+        
+        if (content.classList.contains('active')) {
+            content.classList.remove('active');
+            btn.classList.remove('active');
+        } else {
+            content.classList.add('active');
+            btn.classList.add('active');
+        }
+    }
+
+    // FECHA O MENU DE 4 JOGADORES FORÇADAMENTE AO AVANÇAR OU RETORNAR
+    function collapse4PMenu() {
+        document.getElementById('content-4p-menu').classList.remove('active');
+        document.getElementById('btn-4p-accordion').classList.remove('active');
+    }
+
+    function selectPlayers(num) {
+        totalPlayers = num;
+        collapse4PMenu(); // Reseta se trocar para 2P ou 3P
+        if (num !== 4) {
+            document.getElementById('mode-title').innerText = `${num} Jogadores`;
+            goToScreen('screen-modes');
+        }
+    }
+
+    function select4PMode(mode) {
+        totalPlayers = 4;
+        matchSubMode = mode;
+        document.getElementById('mode-title').innerText = mode === 'dupla' ? '4 Jogadores (Duplas)' : '4 Jogadores (Todos vs Todos)';
+        goToScreen('screen-modes');
+    }
+
+    // RETORNA AO MENU E ASSEGURA QUE A SANFONA VOLTE RECOLHIDA
+    function goBackToMainMenu() {
+        collapse4PMenu();
+        goToScreen('screen-players');
+    }
+
+    function goBackToModes() { goToScreen('screen-modes'); }
+    function openCollection() { renderCollectionList(); goToScreen('screen-collection'); }
+
+    function renderCollectionList() {
+        let html = "";
+        
+        Object.keys(boxesData).forEach((boxName, index) => {
+            let boxHeroes = allCharacters.filter(c => c.set === boxName);
+            let activeCount = boxHeroes.filter(h => heroesStatus[h.name]).length;
+            
+            let boxClass = "accordion-btn";
+            let quickIcon = "✅";
+            let iconColor = "var(--success)";
+            
+            if (boxHeroes.length > 0) {
+                if (activeCount > 0 && activeCount < boxHeroes.length) {
+                    quickIcon = "☑️";
+                    iconColor = "var(--warning)";
+                } else if (activeCount === boxHeroes.length) {
+                    quickIcon = "✅";
+                    iconColor = "var(--success)";
+                } else {
+                    quickIcon = "❌";
+                    iconColor = "var(--text-secondary)";
+                }
+            }
+
+            html += `
+                <div class="box-container">
+                    <div class="${boxClass}" id="btn-col-${index}" onclick="toggleCollectionAccordion(${index})">
+                        <span>${boxName}</span>
+                        <div class="box-controls">
+                            <span class="quick-toggle-btn" style="color: ${iconColor};" onclick="quickToggleBoxHeroes(event, '${boxName}', ${index})">${quickIcon}</span>
+                        </div>
+                    </div>
+                    <div id="content-col-${index}" class="accordion-content">
+            `;
+
+            if (boxHeroes.length === 0) {
+                html += `<div style="padding:10px; font-size:0.8rem; color:var(--text-secondary);">Esta caixa não contém combatentes adicionais.</div>`;
+            }
+
+            boxHeroes.forEach(hero => {
+                let checked = heroesStatus[hero.name] ? "checked" : "";
+                html += `
+                    <div class="hero-row">
+                        <span><strong>[${hero.initials}]</strong> ${hero.name}</span>
+                        <input type="checkbox" id="chk-hero-${hero.name.replace(/\s+/g, '_')}" ${checked} onchange="toggleHeroStatus('${hero.name}', ${index})">
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+        });
+
+        document.getElementById('collection-list-container').innerHTML = html;
+    }
+
+    function quickToggleBoxHeroes(event, boxName, boxIndex) {
+        event.stopPropagation(); 
+        
+        let boxHeroes = allCharacters.filter(c => c.set === boxName);
+        let activeCount = boxHeroes.filter(h => heroesStatus[h.name]).length;
+        let targetStatus = (activeCount > 0) ? false : true;
+        
+        boxHeroes.forEach(hero => {
+            heroesStatus[hero.name] = targetStatus;
+            let safeId = `chk-hero-${hero.name.replace(/\s+/g, '_')}`;
+            let el = document.getElementById(safeId);
+            if (el) el.checked = targetStatus;
+        });
+
+        let btn = document.getElementById(`btn-col-${boxIndex}`);
+        let iconEl = btn.querySelector('.quick-toggle-btn');
+        let newActiveCount = boxHeroes.filter(h => heroesStatus[h.name]).length;
+
+        if (newActiveCount === boxHeroes.length) {
+            iconEl.innerText = "✅";
+            iconEl.style.color = "var(--success)";
+        } else {
+            iconEl.innerText = "❌";
+            iconEl.style.color = "var(--text-secondary)";
+        }
+    }
+
+    function toggleCollectionAccordion(index) {
+        let btn = document.getElementById(`btn-col-${index}`);
+        let content = document.getElementById(`content-col-${index}`);
+        
+        if (content.classList.contains('active')) {
+            content.classList.remove('active');
+            btn.classList.remove('active');
+        } else {
+            content.classList.add('active');
+            btn.classList.add('active');
+        }
+    }
+
+    function toggleHeroStatus(heroName, boxIndex) {
+        let safeId = `chk-hero-${heroName.replace(/\s+/g, '_')}`;
+        heroesStatus[heroName] = document.getElementById(safeId).checked;
+        
+        let boxName = Object.keys(boxesData)[boxIndex];
+        let boxHeroes = allCharacters.filter(c => c.set === boxName);
+        let activeCount = boxHeroes.filter(h => heroesStatus[h.name]).length;
+        let btn = document.getElementById(`btn-col-${boxIndex}`);
+        let iconEl = btn.querySelector('.quick-toggle-btn');
+
+        if (activeCount > 0 && activeCount < boxHeroes.length) {
+            iconEl.innerText = "☑️";
+            iconEl.style.color = "var(--warning)";
+        } else if (activeCount === boxHeroes.length) {
+            iconEl.innerText = "✅";
+            iconEl.style.color = "var(--success)";
+        } else {
+            iconEl.innerText = "❌";
+            iconEl.style.color = "var(--text-secondary)";
+        }
+    }
+
+    function setMassCollection(status) {
+        allCharacters.forEach(hero => {
+            heroesStatus[hero.name] = status;
+        });
+        renderCollectionList();
+    }
+
+    function saveCollection() {
+        localStorage.setItem('unmatched_heroes_status', JSON.stringify(heroesStatus));
+        alert("Coleção atualizada e salva no aparelho!");
+        goToScreen('screen-players');
+    }
+
+    function toggleAccordion(section) {
+        let btn = document.getElementById(`btn-acc-${section}`);
+        let content = document.getElementById(`content-acc-${section}`);
+        
+        if (content.classList.contains('active')) {
+            content.classList.remove('active');
+            btn.classList.remove('active');
+        } else {
+            content.classList.add('active');
+            btn.classList.add('active');
+        }
+    }
+
+    function openDashboardScreen() {
+        let statsHtml = "";
+        let sortedHeroes = [...allCharacters].sort((a, b) => {
+            let wrA = statsData[a.name].matches ? (statsData[a.name].wins / statsData[a.name].matches) : -1;
+            let wrB = statsData[b.name].matches ? (statsData[b.name].wins / statsData[b.name].matches) : -1;
+            return wrB - wrA;
+        });
+
+        sortedHeroes.forEach(hero => {
+            let data = statsData[hero.name];
+            let rate = data.matches ? ((data.wins / data.matches) * 100).toFixed(0) : 0;
+            statsHtml += `<div class="stats-item"><div><strong>${hero.name}</strong><br><span style="font-size:0.8rem; color:var(--text-secondary)">Partidas: ${data.matches} | Vitórias: ${data.wins}</span></div><div style="font-weight:bold; color:${data.matches ? '#38a169' : 'var(--text-secondary)'}">${rate}% WR</div></div>`;
+        });
+        document.getElementById('stats-list-container').innerHTML = statsHtml;
+
+        let historyHtml = "";
+        if (matchHistory.length === 0) {
+            historyHtml = `<div style="text-align:center; color:var(--text-secondary); padding: 25px; font-size:0.9rem;">Nenhuma batalha registrada ainda.</div>`;
+        } else {
+            matchHistory.forEach(match => {
+                historyHtml += `
+                    <div class="history-item">
+                        <div style="display:flex; justify-content:space-between; width:100%; font-size:0.8rem; color:var(--primary); font-weight:bold;">
+                            <span>${match.date}</span>
+                            <span>⏱️ ${match.duration}</span>
+                        </div>
+                        <div style="font-size:0.95rem; margin: 3px 0; color:#fff;">
+                            🗺️ ${match.map} (${match.playersNum}P)
+                        </div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary)">
+                            <strong>Lutadores:</strong> ${match.contenders.join(' vs ')}
+                        </div>
+                        <div style="font-size:0.9rem; color:#38a169; font-weight:bold; margin-top:3px;">
+                            🏆 Campeão: ${match.winner}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('history-list-container').innerHTML = historyHtml;
+
+        document.getElementById('content-acc-winrate').classList.remove('active');
+        document.getElementById('btn-acc-winrate').classList.remove('active');
+        
+        document.getElementById('content-acc-history').classList.remove('active');
+        document.getElementById('btn-acc-history').classList.remove('active');
+
+        goToScreen('screen-dashboard');
+    }
+
+    function resetAllData() {
+        if(confirm("Deseja apagar todo o histórico e o win rate?")) {
+            statsData = {};
+            matchHistory = [];
+            allCharacters.forEach(c => { statsData[c.name] = { matches: 0, wins: 0 }; });
+            localStorage.setItem('unmatched_stats', JSON.stringify(statsData));
+            localStorage.setItem('unmatched_history', JSON.stringify(matchHistory));
+            openDashboardScreen();
+        }
+    }
+
+    function getFilteredPools() {
+        let heroes = allCharacters.filter(char => heroesStatus[char.name]);
+        let activeBoxes = [...new Set(heroes.map(h => h.set))];
+        let maps = [];
+        
+        activeBoxes.forEach(boxName => {
+            if (boxesData[boxName] && boxesData[boxName].maps) {
+                boxesData[boxName].maps.forEach(map => {
+                    if (map.maxPlayers >= totalPlayers) maps.push(map.name);
+                });
+            }
+        });
+
+        maps = [...new Set(maps)];
+        if (maps.length === 0) maps.push("Qualquer Mapa Disponível");
+        return { heroes, maps };
+    }
+
+    function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+    function getTeamClass(playerNum) {
+        if (totalPlayers !== 4 || matchSubMode !== 'dupla') return "";
+        return (playerNum === 1 || playerNum === 3) ? "team-a" : "team-b";
+    }
+
+    function getTeamTag(playerNum) {
+        if (totalPlayers !== 4 || matchSubMode !== 'dupla') return "";
+        return (playerNum === 1 || playerNum === 3) ? `<span class="team-tag tag-a">Dupla A</span>` : `<span class="team-tag tag-b">Dupla B</span>`;
+    }
+
+    function startSimpleSort() {
+        let pools = getFilteredPools();
+        let pool = [...pools.heroes];
+        let maps = [...pools.maps];
+
+        if (pool.length < totalPlayers) { alert("Heróis insuficientes ativados na coleção para rodar o sorteio!"); return; }
+
+        shuffle(pool); shuffle(maps);
+        currentMatchHeroes = {};
+        currentMap = maps[0];
+
+        let html = "";
+        for (let i = 1; i <= totalPlayers; i++) {
+            let hero = pool.pop();
+            currentMatchHeroes[i] = hero.name;
+            
+            html += `
+                <div class="player-card ${getTeamClass(i)}">
+                    <div class="hero-badge">${hero.initials}</div>
+                    <div class="hero-info">
+                        <div style="color: var(--primary); font-weight: bold; font-size: 0.8rem;">JOGADOR ${i} ${getTeamTag(i)}</div>
+                        <div class="hero-name">${hero.name}</div>
+                        <div class="hero-set">${hero.set}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('simple-results').innerHTML = html;
+        document.getElementById('simple-map').innerHTML = `🗺️ <strong>Mapa Sorteado:</strong> ${currentMap}`;
+        goToScreen('screen-result-simple');
+    }
+
+    function startBanSort() {
+        let pools = getFilteredPools();
+        let pool = [...pools.heroes];
+        let maps = [...pools.maps];
+
+        if (pool.length < totalPlayers * 3) { alert(`Heróis habilitados insuficientes (${pool.length}) para dar 3 opções a cada um. Ative mais bonecos!`); return; }
+
+        shuffle(pool); shuffle(maps);
+        currentMap = maps[0];
+
+        let html = "";
+        for (let i = 1; i <= totalPlayers; i++) {
+            let options = [];
+            for (let j = 0; j < 3; j++) { options.push(pool.pop()); }
+
+            html += `
+                <div class="player-card ban-mode ${getTeamClass(i)}" data-player="${i}">
+                    <div style="color: var(--primary); font-weight: bold; font-size: 0.8rem;">OPÇÕES DO JOGADOR ${i}: ${getTeamTag(i)}</div>
+                    <div class="options-container">
+            `;
+            options.forEach(hero => {
+                html += `
+                    <div class="ban-item" data-name="${hero.name}" onclick="handleDraftElement(this)">
+                        <div class="hero-badge">${hero.initials}</div>
+                        <span>${hero.name}</span>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        }
+
+        document.getElementById('ban-results').innerHTML = html;
+        document.getElementById('ban-map').innerHTML = `🗺️ <strong>Mapa Sorteado:</strong> ${currentMap}`;
+        goToScreen('screen-result-ban');
+    }
+
+    function handleDraftElement(element) {
+        let parent = element.parentElement;
+        let bannedCount = parent.querySelectorAll('.banned').length;
+        let selectedCount = parent.querySelectorAll('.selected').length;
+
+        if (!element.classList.contains('banned') && !element.classList.contains('selected')) {
+            if (bannedCount === 0) { element.classList.add('banned'); } 
+            else if (selectedCount === 0) { element.classList.add('selected'); }
+        } else {
+            element.classList.remove('banned', 'selected');
+        }
+    }
+
+    function goToArena(mode) {
+        if (mode === 'ban') {
+            currentMatchHeroes = {};
+            let cards = document.querySelectorAll('.player-card.ban-mode');
+            let totalSelected = 0;
+            
+            cards.forEach(card => {
+                let pNum = card.getAttribute('data-player');
+                let sel = card.querySelector('.ban-item.selected');
+                if (sel) {
+                    currentMatchHeroes[pNum] = sel.getAttribute('data-name');
+                    totalSelected++;
+                }
+            });
+
+            if (totalSelected < totalPlayers) {
+                alert("Selecione os heróis finais de todos os jogadores!");
+                return;
+            }
+        }
+
+        document.getElementById('arena-map').innerHTML = `🗺️ Batalha em: <strong>${currentMap}</strong>`;
+        let contendersHtml = "";
+
+        if (totalPlayers === 4 && matchSubMode === 'dupla') {
+            contendersHtml += `
+                <div class="arena-team-box box-a">
+                    <div class="team-title" style="color:#63b3ed">DUPLA A (Turnos 1 e 3)</div>
+                    <div class="match-card"><span>[J1] ${currentMatchHeroes[1]}</span></div>
+                    <div class="match-card"><span>[J3] ${currentMatchHeroes[3]}</span></div>
+                    <button class="btn-win" onclick="declareTeamWinner('A', [1,3])">Vitória da Dupla A</button>
+                </div>
+                <div class="arena-team-box box-b">
+                    <div class="team-title" style="color:#fc8181">DUPLA B (Turnos 2 e 4)</div>
+                    <div class="match-card"><span>[J2] ${currentMatchHeroes[2]}</span></div>
+                    <div class="match-card"><span>[J4] ${currentMatchHeroes[4]}</span></div>
+                    <button class="btn-win" style="border-color:var(--red-team); color:#fc8181;" onclick="declareTeamWinner('B', [2,4])">Vitória da Dupla B</button>
+                </div>
+            `;
+        } else {
+            Object.keys(currentMatchHeroes).forEach(pNum => {
+                let hName = currentMatchHeroes[pNum];
+                contendersHtml += `
+                    <div class="match-card">
+                        <strong>[J${pNum}] ${hName}</strong>
+                        <button class="btn-win" onclick="declareSingleWinner('${hName}')">Vitória</button>
+                    </div>
+                `;
+            });
+        }
+        
+        document.getElementById('arena-contenders').innerHTML = contendersHtml;
+
+        secondsElapsed = 0;
+        document.getElementById('arena-timer').innerText = "00:00";
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+            let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+            document.getElementById('arena-timer').innerText = `${mins}:${secs}`;
+        }, 1000);
+
+        goToScreen('screen-arena');
+    }
+
+    function declareSingleWinner(winnerName) {
+        clearInterval(timerInterval);
+        Object.values(currentMatchHeroes).forEach(hero => {
+            statsData[hero].matches += 1;
+            if (hero === winnerName) statsData[hero].wins += 1;
+        });
+        saveMatchToHistory(winnerName);
+    }
+
+    function declareTeamWinner(teamLetter, winningPlayers) {
+        clearInterval(timerInterval);
+        Object.keys(currentMatchHeroes).forEach(pNum => {
+            let hero = currentMatchHeroes[pNum];
+            statsData[hero].matches += 1;
+            if (winningPlayers.includes(parseInt(pNum))) statsData[hero].wins += 1;
+        });
+        saveMatchToHistory(`Dupla ${teamLetter} (${currentMatchHeroes[winningPlayers[0]]} & ${currentMatchHeroes[winningPlayers[1]]})`);
+    }
+
+    function saveMatchToHistory(winnerDisplayText) {
+        let now = new Date();
+        let dateString = now.toLocaleDateString('pt-BR') + " - " + now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        
+        let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+        let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+        let durationString = `${mins}:${secs}`;
+
+        let newMatchLog = {
+            date: dateString,
+            map: currentMap,
+            playersNum: totalPlayers,
+            contenders: Object.values(currentMatchHeroes).filter(v => typeof v === "string"),
+            winner: winnerDisplayText,
+            duration: durationString
+        };
+
+        matchHistory.unshift(newMatchLog);
+
+        if (matchHistory.length > 10) {
+            matchHistory = matchHistory.slice(0, 10);
+        }
+
+        localStorage.setItem('unmatched_stats', JSON.stringify(statsData));
+        localStorage.setItem('unmatched_history', JSON.stringify(matchHistory));
+
+        alert(`🏆 Partida salva no histórico!\nResultado: ${winnerDisplayText}`);
+        
+        collapse4PMenu();
+        goToScreen('screen-players');
+    }
+</script>
+
+</body>
+</html>
